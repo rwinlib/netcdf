@@ -39,7 +39,7 @@ extern "C" {
 #define	NC_CHAR 	2	/**< ISO/ASCII character */
 #define	NC_SHORT 	3	/**< signed 2 byte integer */
 #define	NC_INT 	        4	/**< signed 4 byte integer */
-#define NC_LONG         NC_INT  /**< deprecated, but required for backward compatibility. */
+#define NC_LONG         NC_INT  /**< \deprecated required for backward compatibility. */
 #define	NC_FLOAT 	5	/**< single precision floating point number */
 #define	NC_DOUBLE 	6	/**< double precision floating point number */
 #define	NC_UBYTE 	7	/**< unsigned 1 byte int */
@@ -120,20 +120,25 @@ extern "C" {
 #define NC_NOFILL	0x100	/**< Argument to nc_set_fill() to turn off filling of data. */
 
 /* Define the ioflags bits for nc_create and nc_open.
-   currently unused: 0x0010,0x0020,0x0040,0x0080
+   currently unused:
+        0x0002
+	0x0040
+	0x0080
    and the whole upper 16 bits
 */
 
 #define NC_NOWRITE	 0x0000	/**< Set read-only access for nc_open(). */
 #define NC_WRITE    	 0x0001	/**< Set read-write access for nc_open(). */
-/* unused: 0x0002 */
 #define NC_CLOBBER	 0x0000 /**< Destroy existing file. Mode flag for nc_create(). */
 #define NC_NOCLOBBER     0x0004	/**< Don't destroy existing file. Mode flag for nc_create(). */
 
 #define NC_DISKLESS      0x0008  /**< Use diskless file. Mode flag for nc_open() or nc_create(). */
 #define NC_MMAP          0x0010  /**< Use diskless file with mmap. Mode flag for nc_open() or nc_create(). */
 
-#define NC_CLASSIC_MODEL 0x0100 /**< Enforce classic model. Mode flag for nc_create(). */
+#define NC_64BIT_DATA    0x0020  /**< CDF-5 format: classic model but 64 bit dimensions and sizes */
+#define NC_CDF5          NC_64BIT_DATA  /**< Alias NC_CDF5 to NC_64BIT_DATA */
+
+#define NC_CLASSIC_MODEL 0x0100 /**< Enforce classic model on netCDF-4. Mode flag for nc_create(). */
 #define NC_64BIT_OFFSET  0x0200  /**< Use large (64-bit) file offsets. Mode flag for nc_create(). */
 
 /** \deprecated The following flag currently is ignored, but use in
@@ -142,7 +147,7 @@ extern "C" {
  */
 #define NC_LOCK          0x0400
 
-/** Share updates, limit cacheing.
+/** Share updates, limit caching.
 Use this in mode flags for both nc_create() and nc_open(). */
 #define NC_SHARE         0x0800
 
@@ -154,7 +159,10 @@ Use this in mode flags for both nc_create() and nc_open(). */
 /** Turn on MPI POSIX I/O.
 Use this in mode flags for both nc_create() and nc_open(). */
 #define NC_MPIPOSIX      0x4000 /**< \deprecated As of libhdf5 1.8.13. */
-#define NC_PNETCDF       0x8000	/**< Use parallel-netcdf library. Mode flag for nc_open(). */
+
+#define NC_INMEMORY      0x8000  /**< Read from memory. Mode flag for nc_open() or nc_create(). */
+
+#define NC_PNETCDF       (NC_MPIIO) /**< Use parallel-netcdf library; alias for NC_MPIIO. */
 
 /** Format specifier for nc_set_default_format() and returned
  *  by nc_inq_format. This returns the format as provided by
@@ -163,10 +171,20 @@ Use this in mode flags for both nc_create() and nc_open(). */
  *  4.0 introduces the third one. \see netcdf_format
  */
 /**@{*/
-#define NC_FORMAT_CLASSIC (1)
-#define NC_FORMAT_64BIT   (2)
-#define NC_FORMAT_NETCDF4 (3)
-#define NC_FORMAT_NETCDF4_CLASSIC  (4)
+#define NC_FORMAT_CLASSIC         (1)
+/* After adding CDF5 support, this flag
+   is somewhat confusing. So, it is renamed.
+   Note that the name in the contributed code
+   NC_FORMAT_64BIT was renamed to NC_FORMAT_CDF2
+*/
+#define NC_FORMAT_64BIT_OFFSET    (2)
+#define NC_FORMAT_64BIT           (NC_FORMAT_64BIT_OFFSET) /**< \deprecated Saved for compatibility.  Use NC_FORMAT_64BIT_OFFSET or NC_FORMAT_64BIT_DATA, from netCDF 4.4.0 onwards. */
+#define NC_FORMAT_NETCDF4         (3)
+#define NC_FORMAT_NETCDF4_CLASSIC (4)
+#define NC_FORMAT_64BIT_DATA      (5)
+
+/* Alias */
+#define NC_FORMAT_CDF5    NC_FORMAT_64BIT_DATA
 
 /**@}*/
 
@@ -184,15 +202,33 @@ Use this in mode flags for both nc_create() and nc_open(). */
  *    or nc_create.
  * More or less, the #1 values track the set of dispatch tables.
  * The #1 values are as follows.
+ * Note that CDF-5 returns NC_FORMAT_NC3, but sets the mode flag properly.
  */
 /**@{*/
-#define NC_FORMAT_NC3     (1)
-#define NC_FORMAT_NC_HDF5 (2) /* netCDF-4 subset of HDF5 */
-#define NC_FORMAT_NC_HDF4 (3) /* netCDF-4 subset of HDF4 */
-#define NC_FORMAT_PNETCDF (4)
-#define NC_FORMAT_DAP2    (5)
-#define NC_FORMAT_DAP4    (6)
-#define NC_FORMAT_UNDEFINED (0)
+
+#define NC_FORMATX_NC3       (1)
+#define NC_FORMATX_NC_HDF5   (2) /**< netCDF-4 subset of HDF5 */
+#define NC_FORMATX_NC4       NC_FORMATX_NC_HDF5 /**< alias */
+#define NC_FORMATX_NC_HDF4   (3) /**< netCDF-4 subset of HDF4 */
+#define NC_FORMATX_PNETCDF   (4)
+#define NC_FORMATX_DAP2      (5)
+#define NC_FORMATX_DAP4      (6)
+#define NC_FORMATX_UNDEFINED (0)
+
+  /* To avoid breaking compatibility (such as in the python library),
+   we need to retain the NC_FORMAT_xxx format as well. This may come
+  out eventually, as the NC_FORMATX is more clear that it's an extended
+  format specifier.*/
+
+#define NC_FORMAT_NC3       NC_FORMATX_NC3 /**< \deprecated As of 4.4.0, use NC_FORMATX_NC3 */
+#define NC_FORMAT_NC_HDF5   NC_FORMATX_NC_HDF5 /**< \deprecated As of 4.4.0, use NC_FORMATX_NC_HDF5 */
+#define NC_FORMAT_NC4       NC_FORMATX_NC4 /**< \deprecated As of 4.4.0, use NC_FORMATX_NC4 */
+#define NC_FORMAT_NC_HDF4   NC_FORMATX_NC_HDF4 /**< \deprecated As of 4.4.0, use NC_FORMATX_HDF4 */
+#define NC_FORMAT_PNETCDF   NC_FORMATX_PNETCDF /**< \deprecated As of 4.4.0, use NC_FORMATX_PNETCDF */
+#define NC_FORMAT_DAP2      NC_FORMATX_DAP2 /**< \deprecated As of 4.4.0, use NC_FORMATX_DAP2 */
+#define NC_FORMAT_DAP4      NC_FORMATX_DAP4 /**< \deprecated As of 4.4.0, use NC_FORMATX_DAP4 */
+#define NC_FORMAT_UNDEFINED NC_FORMATX_UNDEFINED /**< \deprecated As of 4.4.0, use NC_FORMATX_UNDEFINED */
+
 /**@}*/
 
 /** Let nc__create() or nc__open() figure out a suitable buffer size. */
@@ -309,7 +345,12 @@ The specified corner indices were out of range for the rank of the
 specified variable. For example, a negative index or an index that is
 larger than the corresponding dimension length will cause an error. */
 #define	NC_EINVALCOORDS	(-40)
-#define	NC_EMAXDIMS	(-41)	   /**< NC_MAX_DIMS exceeded */
+
+/** NC_MAX_DIMS exceeded. Max number of dimensions exceeded in a
+classic or 64-bit offset file, or an netCDF-4 file with
+::NC_CLASSIC_MODEL on. */
+#define	NC_EMAXDIMS	(-41)
+
 #define	NC_ENAMEINUSE	(-42)	   /**< String match to name in use */
 #define NC_ENOTATT	(-43)	   /**< Attribute not found */
 #define	NC_EMAXATTS	(-44)	   /**< NC_MAX_ATTRS exceeded */
@@ -407,7 +448,7 @@ by the desired type. */
 #define NC_EMAPTYPE      (-121)    /**< Mapped access for atomic types only. */
 #define NC_ELATEFILL     (-122)    /**< Attempt to define fill value when data already exists. */
 #define NC_ELATEDEF      (-123)    /**< Attempt to define var properties, like deflate, after enddef. */
-#define NC_EDIMSCALE     (-124)    /**< Probem with HDF5 dimscales. */
+#define NC_EDIMSCALE     (-124)    /**< Problem with HDF5 dimscales. */
 #define NC_ENOGRP        (-125)    /**< No group found. */
 #define NC_ESTORAGE      (-126)    /**< Can't specify both contiguous and chunking. */
 #define NC_EBADCHUNK     (-127)    /**< Bad chunksize. */
@@ -831,7 +872,7 @@ EXTERNL int
 nc_set_fill(int ncid, int fillmode, int *old_modep);
 
 /* Set the default nc_create format to NC_FORMAT_CLASSIC,
- * NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC. */
+ * NC_FORMAT_64BIT, NC_FORMAT_NETCDF4, etc */
 EXTERNL int
 nc_set_default_format(int format, int *old_formatp);
 
@@ -848,7 +889,7 @@ EXTERNL int
 nc_set_var_chunk_cache(int ncid, int varid, size_t size, size_t nelems,
 		       float preemption);
 
-/* Set the per-variable cache size, nelems, and preemption policy. */
+/* Get the per-variable cache size, nelems, and preemption policy. */
 EXTERNL int
 nc_get_var_chunk_cache(int ncid, int varid, size_t *sizep, size_t *nelemsp,
 		       float *preemptionp);
@@ -856,7 +897,7 @@ nc_get_var_chunk_cache(int ncid, int varid, size_t *sizep, size_t *nelemsp,
 EXTERNL int
 nc_redef(int ncid);
 
-/* Is this ever used? */
+/* Is this ever used? Convert to parameter form */
 EXTERNL int
 nc__enddef(int ncid, size_t h_minfree, size_t v_align,
 	size_t v_minfree, size_t r_align);
@@ -950,13 +991,19 @@ nc_del_att(int ncid, int varid, const char *name);
 
 /* End _att */
 /* Begin {put,get}_att */
-
 EXTERNL int
 nc_put_att_text(int ncid, int varid, const char *name,
 		size_t len, const char *op);
 
 EXTERNL int
 nc_get_att_text(int ncid, int varid, const char *name, char *ip);
+
+EXTERNL int
+nc_put_att_string(int ncid, int varid, const char *name,
+		  size_t len, const char **op);
+
+EXTERNL int
+nc_get_att_string(int ncid, int varid, const char *name, char **ip);
 
 EXTERNL int
 nc_put_att_uchar(int ncid, int varid, const char *name, nc_type xtype,
@@ -1036,12 +1083,6 @@ EXTERNL int
 nc_get_att_ulonglong(int ncid, int varid, const char *name,
 		     unsigned long long *ip);
 
-EXTERNL int
-nc_put_att_string(int ncid, int varid, const char *name,
-		  size_t len, const char **op);
-
-EXTERNL int
-nc_get_att_string(int ncid, int varid, const char *name, char **ip);
 
 /* End {put,get}_att */
 /* Begin _var */
@@ -1739,10 +1780,10 @@ nc_inq_base_pe(int ncid, int *pe);
 EXTERNL int
 nctypelen(nc_type datatype);
 
-/* Begin v2.4 backward compatiblity */
+/* Begin v2.4 backward compatibility */
 /*
  * defining NO_NETCDF_2 to the preprocessor
- * turns off backward compatiblity declarations.
+ * turns off backward compatibility declarations.
  */
 #ifndef NO_NETCDF_2
 
@@ -1907,7 +1948,9 @@ ncrecget(int ncid, long recnum, void **datap);
 EXTERNL int
 ncrecput(int ncid, long recnum, void *const *datap);
 
-/* End v2.4 backward compatiblity */
+/* EXTERNL int nc_finalize(); */
+
+/* End v2.4 backward compatibility */
 #endif /*!NO_NETCDF_2*/
 
 #if defined(__cplusplus)
