@@ -2,11 +2,11 @@
 
 Includes both NetCDF and UDUNITS.
 
- - netcdf 4.4.1.1
- - hdf5 1.8.16
- - udunits 2.2.25
+ - netcdf 4.7.3
+ - hdf5 1.10.5
+ - udunits 2.2.27
 
-All built using stock msys2 tools. 
+Built using https://github.com/r-windows/rtools-packages
 
 ## DAP support in NetCDF
 

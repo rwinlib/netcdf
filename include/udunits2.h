@@ -481,7 +481,7 @@ ut_new_dimensionless_unit(
  */
 EXTERNL ut_unit*
 ut_clone(
-    const ut_unit*	unit);
+    const ut_unit* const unit);
 
 
 /*
@@ -1200,9 +1200,12 @@ ut_encode_date(
  * Encodes a time as a double-precision value.
  *
  * Arguments:
- *	hours		The number of hours (0 = midnight).
- *	minutes		The number of minutes.
- *	seconds		The number of seconds.
+ *	hours		The number of hours (0 = midnight). `abs(hours)` must be
+ *	                less than 24.
+ *	minutes		The number of minutes. `abs(minutes)` must be less than
+ *	                60.
+ *	seconds		The number of seconds. `abs(seconds)` must be less than
+ *	                or equal to 62.
  * Returns:
  *	The clock-time encoded as a scalar value.
  */
