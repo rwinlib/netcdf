@@ -114,7 +114,7 @@
 /* #undef H5_HAVE_DARWIN */
 
 /* Define to 1 if you have the `difftime' function. */
-#define H5_HAVE_DIFFTIME 1
+/* #undef H5_HAVE_DIFFTIME */
 
 /* Define if the direct I/O virtual file driver (VFD) should be compiled */
 /* #undef H5_HAVE_DIRECT */

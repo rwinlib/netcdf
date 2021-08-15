@@ -25,7 +25,7 @@
 
 #define NC_VERSION_MAJOR 4 /*!< netcdf-c major version. */
 #define NC_VERSION_MINOR 7 /*!< netcdf-c minor version. */
-#define NC_VERSION_PATCH 3 /*!< netcdf-c patch version. */
+#define NC_VERSION_PATCH 4 /*!< netcdf-c patch version. */
 #define NC_VERSION_NOTE  "" /*!< netcdf-c note. May be blank. */
 
 /*! netcdf-c version string.
@@ -37,13 +37,14 @@
  * Note that the trailing NC_VERSION_NOTE may be empty. It serves for
  * identifiers such as '-rc1', etc.
  */
-#define NC_VERSION       "4.7.3"
+#define NC_VERSION       "4.7.4"
 
 #define NC_HAS_NC2       1 /*!< API version 2 support. */
 #define NC_HAS_NC4       1 /*!< API version 4 support. */
 #define NC_HAS_HDF4      0 /*!< HDF4 support. */
 #define NC_HAS_HDF5      1 /*!< HDF5 support. */
-#define NC_HAS_SZIP      0 /*!< szip support (HDF5 only) */
+#define NC_HAS_SZIP       /*!< szip support (HDF5 only) */
+#define NC_HAS_SZIP_WRITE  /*!< szip write support (HDF5 only) */
 #define NC_HAS_DAP2      1 /*!< DAP2 support. */
 #define NC_HAS_DAP4      1 /*!< DAP4 support. */
 #define NC_HAS_BYTERANGE no
@@ -58,5 +59,5 @@
 #define NC_HAS_ERANGE_FILL 1 /*!< ERANGE_FILL Support */
 #define NC_RELAX_COORD_BOUND 1 /*!< RELAX_COORD_BOUND */
 #define NC_DISPATCH_VERSION 1 /*!< Dispatch table version */
-
+#define NC_HAS_PAR_FILTERS 0 /* Parallel I/O with filter support. */
 #endif
