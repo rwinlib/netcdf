@@ -24,8 +24,8 @@
 #define NETCDF_META_H
 
 #define NC_VERSION_MAJOR 4 /*!< netcdf-c major version. */
-#define NC_VERSION_MINOR 7 /*!< netcdf-c minor version. */
-#define NC_VERSION_PATCH 4 /*!< netcdf-c patch version. */
+#define NC_VERSION_MINOR 9 /*!< netcdf-c minor version. */
+#define NC_VERSION_PATCH 0 /*!< netcdf-c patch version. */
 #define NC_VERSION_NOTE  "" /*!< netcdf-c note. May be blank. */
 
 /*! netcdf-c version string.
@@ -37,17 +37,17 @@
  * Note that the trailing NC_VERSION_NOTE may be empty. It serves for
  * identifiers such as '-rc1', etc.
  */
-#define NC_VERSION       "4.7.4"
+#define NC_VERSION       "4.9.0"
 
 #define NC_HAS_NC2       1 /*!< API version 2 support. */
 #define NC_HAS_NC4       1 /*!< API version 4 support. */
 #define NC_HAS_HDF4      0 /*!< HDF4 support. */
 #define NC_HAS_HDF5      1 /*!< HDF5 support. */
-#define NC_HAS_SZIP       /*!< szip support (HDF5 only) */
-#define NC_HAS_SZIP_WRITE  /*!< szip write support (HDF5 only) */
-#define NC_HAS_DAP2      1 /*!< DAP2 support. */
-#define NC_HAS_DAP4      1 /*!< DAP4 support. */
-#define NC_HAS_BYTERANGE no
+#define NC_HAS_SZIP      0 /*!< szip support (HDF5 only) */
+#define NC_HAS_SZIP_WRITE 0 /*!< szip write support (HDF5 only) */
+#define NC_HAS_DAP2      0 /*!< DAP2 support. */
+#define NC_HAS_DAP4      0 /*!< DAP4 support. */
+#define NC_HAS_BYTERANGE 0 /*!< Byterange support. */
 #define NC_HAS_DISKLESS  1 /*!< diskless support. */
 #define NC_HAS_MMAP      0 /*!< mmap support. */
 #define NC_HAS_JNA       0 /*!< jna support. */
@@ -55,9 +55,16 @@
 #define NC_HAS_PARALLEL4 0 /*!< parallel IO support via HDF5 */
 #define NC_HAS_PARALLEL  0 /*!< parallel IO support via HDF5 and/or PnetCDF. */
 
-#define NC_HAS_CDF5      1  /*!< CDF5 support. */
-#define NC_HAS_ERANGE_FILL 1 /*!< ERANGE_FILL Support */
-#define NC_RELAX_COORD_BOUND 1 /*!< RELAX_COORD_BOUND */
-#define NC_DISPATCH_VERSION 1 /*!< Dispatch table version */
-#define NC_HAS_PAR_FILTERS 0 /* Parallel I/O with filter support. */
+#define NC_HAS_CDF5          1 /*!< CDF5 support. */
+#define NC_HAS_ERANGE_FILL   0 /*!< ERANGE_FILL Support. */
+#define NC_RELAX_COORD_BOUND 1 /*!< Always allow 0 counts in parallel I/O. */
+#define NC_DISPATCH_VERSION  5 /*!< Dispatch table version. */
+#define NC_HAS_PAR_FILTERS   1 /* Parallel I/O with filter support. */
+#define NC_HAS_NCZARR        1 /*!< Parallel I/O with filter support. */
+#define NC_HAS_MULTIFILTERS  1 /*!< Nczarr support. */
+#define NC_HAS_LOGGING       0 /*!< Logging support. */
+#define NC_HAS_QUANTIZE      1 /*!< Quantization support. */
+#define NC_HAS_ZSTD          0 /*!< Zstd support. */
+#define NC_HAS_BENCHMARKS    0 /*!< Benchmarks. */
+
 #endif

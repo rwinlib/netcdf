@@ -115,17 +115,19 @@ extern "C" {
 #define NC_NOFILL       0x100   /**< Argument to nc_set_fill() to turn off filling of data. */
 
 /* Define the ioflags bits for nc_create and nc_open.
-   currently unused:
+   Currently unused in lower 16 bits:
         0x0002
-   and the whole upper 16 bits
+   All upper 16 bits are unused except
+        0x20000
 */
+
+/* Lower 16 bits */
 
 #define NC_NOWRITE       0x0000 /**< Set read-only access for nc_open(). */
 #define NC_WRITE         0x0001 /**< Set read-write access for nc_open(). */
 
 #define NC_CLOBBER       0x0000 /**< Destroy existing file. Mode flag for nc_create(). */
 #define NC_NOCLOBBER     0x0004 /**< Don't destroy existing file. Mode flag for nc_create(). */
-
 #define NC_DISKLESS      0x0008  /**< Use diskless file. Mode flag for nc_open() or nc_create(). */
 #define NC_MMAP          0x0010  /**< \deprecated Use diskless file with mmap. Mode flag for nc_open() or nc_create()*/
 
@@ -159,6 +161,10 @@ Use this in mode flags for both nc_create() and nc_open(). */
 
 #define NC_PERSIST       0x4000  /**< Save diskless contents to disk. Mode flag for nc_open() or nc_create() */
 #define NC_INMEMORY      0x8000  /**< Read from memory. Mode flag for nc_open() or nc_create() */
+
+/* Upper 16 bits */
+#define NC_NOATTCREORD  0x20000 /**< Disable the netcdf-4 (hdf5) attribute creation order tracking */
+#define NC_NODIMSCALE_ATTACH 0x40000 /**< Disable the netcdf-4 (hdf5) attaching of dimscales to variables (#2128) */
 
 #define NC_MAX_MAGIC_NUMBER_LEN 8 /**< Max len of user-defined format magic number. */
 
@@ -216,7 +222,7 @@ Use this in mode flags for both nc_create() and nc_open(). */
 #define NC_FORMATX_DAP4      (6)
 #define NC_FORMATX_UDF0      (8)
 #define NC_FORMATX_UDF1      (9)
-#define NC_FORMATX_ZARR      (10)
+#define NC_FORMATX_NCZARR    (10)
 #define NC_FORMATX_UNDEFINED (0)
 
   /* To avoid breaking compatibility (such as in the python library),
@@ -292,11 +298,14 @@ NOTE: The NC_MAX_DIMS, NC_MAX_ATTRS, and NC_MAX_VARS limits
 
 /** In HDF5 files you can set storage for each variable to be either
  * contiguous or chunked, with nc_def_var_chunking().  This define is
- * used there. */
+ * used there. Unknown storage is used for further extensions of HDF5
+ * storage models, which should be handled transparently by netcdf */
 /**@{*/
-#define NC_CHUNKED    0
-#define NC_CONTIGUOUS 1
-#define NC_COMPACT    2
+#define NC_CHUNKED         0
+#define NC_CONTIGUOUS      1
+#define NC_COMPACT         2
+#define NC_UNKNOWN_STORAGE 3
+#define NC_VIRTUAL         4
 /**@}*/
 
 /** In HDF5 files you can set check-summing for each variable.
@@ -319,6 +328,36 @@ there. */
 
 #define NC_MIN_DEFLATE_LEVEL 0 /**< Minimum deflate level. */
 #define NC_MAX_DEFLATE_LEVEL 9 /**< Maximum deflate level. */
+
+#define NC_SZIP_NN 32 /**< SZIP NN option mask. */
+#define NC_SZIP_EC 4  /**< SZIP EC option mask. */
+
+#define NC_NOQUANTIZE 0 /**< No quantization in use. */    
+#define NC_QUANTIZE_BITGROOM 1 /**< Use BitGroom quantization. */
+#define NC_QUANTIZE_GRANULARBR 2 /**< Use Granular BitRound quantization. */
+#define NC_QUANTIZE_BITROUND 3 /**< Use BitRound quantization. */
+
+/**@{*/
+/** When quantization is used for a variable, an attribute of the
+ * appropriate name is added. */
+#define NC_QUANTIZE_BITGROOM_ATT_NAME "_QuantizeBitGroomNumberOfSignificantDigits"
+#define NC_QUANTIZE_GRANULARBR_ATT_NAME "_QuantizeGranularBitRoundNumberOfSignificantDigits"
+#define NC_QUANTIZE_BITROUND_ATT_NAME "_QuantizeBitRoundNumberOfSignificantBits"
+/**@}*/
+
+/**@{*/
+/** For quantization, the allowed value of number of significant
+ * decimal and binary digits, respectively, for float. */
+#define NC_QUANTIZE_MAX_FLOAT_NSD (7)
+#define NC_QUANTIZE_MAX_FLOAT_NSB (23)
+/**@}*/
+
+/**@{*/
+/** For quantization, the allowed value of number of significant
+ * decimal and binary digits, respectively, for double. */
+#define NC_QUANTIZE_MAX_DOUBLE_NSD (15)
+#define NC_QUANTIZE_MAX_DOUBLE_NSB (52)
+/**@}*/
 
 /** The netcdf version 3 functions all return integer error status.
  * These are the possible values, in addition to certain values from
@@ -476,8 +515,14 @@ by the desired type. */
 #define NC_ENULLPAD      (-134)    /**< Header Bytes not Null-Byte padded */
 #define NC_EINMEMORY     (-135)    /**< In-memory file error */
 #define NC_ENOFILTER     (-136)    /**< Filter not defined on variable. */
+#define NC_ENCZARR       (-137)    /**< Error at NCZarr layer. */
+#define NC_ES3           (-138)    /**< Generic S3 error */
+#define NC_EEMPTY        (-139)    /**< Attempt to read empty NCZarr map key */
+#define NC_EOBJECT       (-140)    /**< Some object exists when it should not */
+#define NC_ENOOBJECT     (-141)    /**< Some object not found */
+#define NC_EPLUGIN       (-142)    /**< Unclassified failure in accessing a dynamically loaded plugin> */
 
-#define NC4_LAST_ERROR   (-137)    /**< @internal All netCDF errors > this. */
+#define NC4_LAST_ERROR   (-142)    /**< @internal All netCDF errors > this. */
 
 /* Errors for all remote access methods(e.g. DAP and CDMREMOTE)*/
 #define NC_EURL         (NC_EDAPURL)   /**< Malformed URL */
@@ -528,6 +573,14 @@ nc_def_user_format(int mode_flag, NC_Dispatch *dispatch_table, char *magic_numbe
 
 EXTERNL int
 nc_inq_user_format(int mode_flag, NC_Dispatch **dispatch_table, char *magic_number);
+
+/* Set the global alignment property */
+EXTERNL int
+nc_set_alignment(int threshold, int alignment);
+
+/* Get the global alignment property */
+EXTERNL int
+nc_get_alignment(int* thresholdp, int* alignmentp);
 
 EXTERNL int
 nc__create(const char *path, int cmode, size_t initialsz,
@@ -630,7 +683,7 @@ nc_insert_array_compound(int ncid, nc_type xtype, const char *name,
 EXTERNL int
 nc_inq_type(int ncid, nc_type xtype, char *name, size_t *size);
 
-/* Get the id of a type from the name. */
+/* Get the id of a type from the name, which might be a fully qualified name */
 EXTERNL int
 nc_inq_typeid(int ncid, const char *name, nc_type *typeidp);
 
@@ -713,7 +766,10 @@ nc_inq_vlen(int ncid, nc_type xtype, char *name, size_t *datum_sizep,
 /* When you read VLEN type the library will actually allocate the
  * storage space for the data. This storage space must be freed, so
  * pass the pointer back to this function, when you're done with the
- * data, and it will free the vlen memory. */
+ * data, and it will free the vlen memory.
+ * These two functions are deprecated in favor of the nc_reclaim_data function.
+ */
+
 EXTERNL int
 nc_free_vlen(nc_vlen_t *vl);
 
@@ -732,7 +788,9 @@ nc_get_vlen_element(int ncid, int typeid1, const void *vlen_element,
 /* When you read the string type the library will allocate the storage
  * space for the data. This storage space must be freed, so pass the
  * pointer back to this function, when you're done with the data, and
- * it will free the string memory. */
+ * it will free the string memory.
+ * This function is deprecated in favor of the nc_reclaim_data function.
+ */
 EXTERNL int
 nc_free_string(size_t len, char **data);
 
@@ -843,6 +901,16 @@ nc_get_varm(int ncid, int varid,  const size_t *startp,
             const ptrdiff_t *imapp, void *ip);
 
 /* Extra netcdf-4 stuff. */
+
+/* Set quantization settings for a variable. Quantizing data improves
+ * later compression. Must be called after nc_def_var and before
+ * nc_enddef. */
+EXTERNL int
+nc_def_var_quantize(int ncid, int varid, int quantize_mode, int nsd);
+
+/* Find out quantization settings of a var. */
+EXTERNL int
+nc_inq_var_quantize(int ncid, int varid, int *quantize_modep, int *nsdp);
 
 /* Set compression settings for a variable. Lower is faster, higher is
  * better. Must be called after nc_def_var and before nc_enddef. */
@@ -1714,6 +1782,53 @@ nc_put_var_string(int ncid, int varid, const char **op);
 EXTERNL int
 nc_get_var_string(int ncid, int varid, char **ip);
 
+/* Begin recursive instance walking functions */
+
+/**
+Reclaim a vector of instances of arbitrary type.  Intended for
+use with e.g. nc_get_vara or the input to e.g. nc_put_vara.
+This recursively walks the top-level instances to reclaim any
+nested data such as vlen or strings or such.
+
+Assumes it is passed a pointer to count instances of xtype.
+Reclaims any nested data.
+
+WARNING: nc_reclaim_data does not reclaim the top-level
+memory because we do not know how it was allocated.  However
+nc_reclaim_data_all does reclaim top-level memory.
+
+WARNING: all data blocks below the top-level (e.g. string
+instances) will be reclaimed, so do not call if there is any
+static data in the instance.
+
+Should work for any netcdf format.
+*/
+
+EXTERNL int nc_reclaim_data(int ncid, nc_type xtypeid, void* memory, size_t count);
+EXTERNL int nc_reclaim_data_all(int ncid, nc_type xtypeid, void* memory, size_t count);
+
+/**
+
+Copy vector of arbitrary type instances.  This recursively walks
+the top-level instances to copy any nested data such as vlen or
+strings or such.
+
+Assumes it is passed a pointer to count instances of xtype.
+WARNING: nc_copy_data does not copy the top-level memory, but
+assumes a block of proper size was passed in.  However
+nc_copy_data_all does allocate top-level memory copy.
+
+Should work for any netcdf format.
+*/
+
+EXTERNL int nc_copy_data(int ncid, nc_type xtypeid, const void* memory, size_t count, void* copy);
+EXTERNL int nc_copy_data_all(int ncid, nc_type xtypeid, const void* memory, size_t count, void** copyp);
+
+/* Instance dumper for debugging */
+EXTERNL int nc_dump_data(int ncid, nc_type xtypeid, void* memory, size_t count, char** buf);
+
+/* end recursive instance walking functions */
+
 /* Begin Deprecated, same as functions with "_ubyte" replaced by "_uchar" */
 EXTERNL int
 nc_put_att_ubyte(int ncid, int varid, const char *name, nc_type xtype,
@@ -1751,8 +1866,10 @@ nc_get_varm_ubyte(int ncid, int varid, const size_t *startp,
                   const ptrdiff_t * imapp, unsigned char *ip);
 EXTERNL int
 nc_put_var_ubyte(int ncid, int varid, const unsigned char *op);
+
 EXTERNL int
 nc_get_var_ubyte(int ncid, int varid, unsigned char *ip);
+
 /* End Deprecated */
 
 /* Set the log level. 0 shows only errors, 1 only major messages,

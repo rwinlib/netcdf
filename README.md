@@ -1,9 +1,26 @@
-# UCAR unidata
+# netcdf 4.9.0-1
 
-Includes both NetCDF and UDUNITS.
-
- - netcdf 4.7.4
- - hdf5 1.10.5
- - udunits 2.2.27
-
-Built using https://github.com/r-windows/rtools-packages
+ - mingw-w64-i686-zlib-1.2.11-9100-any.pkg.tar.xz
+ - mingw-w64-i686-openssl-1.1.1.m-9800-any.pkg.tar.xz
+ - mingw-w64-i686-libssh2-1.10.0-9800-any.pkg.tar.xz
+ - mingw-w64-i686-curl-7.64.1-9202-any.pkg.tar.xz
+ - mingw-w64-i686-hdf5-1.10.5-9002-any.pkg.tar.xz
+ - mingw-w64-i686-netcdf-4.9.0-1-any.pkg.tar.xz
+ - mingw-w64-i686-expat-2.2.9-9002-any.pkg.tar.xz
+ - mingw-w64-i686-udunits-2.2.28-1-any.pkg.tar.xz
+ - mingw-w64-x86_64-zlib-1.2.11-9100-any.pkg.tar.xz
+ - mingw-w64-x86_64-openssl-1.1.1.m-9800-any.pkg.tar.xz
+ - mingw-w64-x86_64-libssh2-1.10.0-9800-any.pkg.tar.xz
+ - mingw-w64-x86_64-curl-7.64.1-9202-any.pkg.tar.xz
+ - mingw-w64-x86_64-hdf5-1.10.5-9002-any.pkg.tar.xz
+ - mingw-w64-x86_64-netcdf-4.9.0-1-any.pkg.tar.xz
+ - mingw-w64-x86_64-expat-2.2.9-9002-any.pkg.tar.xz
+ - mingw-w64-x86_64-udunits-2.2.28-1-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-zlib-1.2.11-9100-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-openssl-1.1.1.m-9800-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-libssh2-1.10.0-9800-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-curl-7.64.1-9202-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-hdf5-1.10.5-9002-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-netcdf-4.9.0-1-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-expat-2.2.9-9002-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-udunits-2.2.28-1-any.pkg.tar.xz
