@@ -15,14 +15,14 @@ Plugin Install Prefix:  N.A.
 -----------------
 C Compiler:		/mingw64/bin/gcc
 CFLAGS:			-march=x86-64 -mtune=generic -O2 -pipe -fno-strict-aliasing
-CPPFLAGS:		-D__USE_MINGW_ANSI_STDIO=1
+CPPFLAGS:		-DLIBXML_STATIC -DCURL_STATICLIB -I/mingw64/include/libxml2 -I/mingw64/include -D__USE_MINGW_ANSI_STDIO=1
 LDFLAGS:		-pipe
 AM_CFLAGS:		
 AM_CPPFLAGS:		
 AM_LDFLAGS:		
 Shared Library:		no
 Static Library:		yes
-Extra libraries:	-lhdf5_hl -lhdf5 -lm -lz -lbz2 
+Extra libraries:	-lhdf5_hl -lhdf5 -lm -lbz2 -lxml2 -lz -liconv -lws2_32 -lcurl -lnormaliz -lssh2 -lcrypt32 -lgdi32 -lws2_32 -lcrypt32 -lgdi32 -lws2_32 -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lz -lssl -lcrypto -lssl -lcrypto -lws2_32 -lgdi32 -lcrypt32 -lgdi32 -lcrypt32 -lwldap32 -lz -lws2_32
 XML Parser:             libxml2
 
 # Features
@@ -33,8 +33,8 @@ HDF5 Support:		yes
 NetCDF-4 API:		yes
 NC-4 Parallel Support:	no
 PnetCDF Support:	no
-DAP2 Support:		no
-DAP4 Support:		no
+DAP2 Support:		yes
+DAP4 Support:		yes
 Byte-Range Support:	no
 Diskless Support:	yes
 MMap Support:		no

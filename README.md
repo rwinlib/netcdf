@@ -1,26 +1,32 @@
-# netcdf 4.9.0-1
+# netcdf 4.9.0-2
 
  - mingw-w64-i686-zlib-1.2.11-9100-any.pkg.tar.xz
  - mingw-w64-i686-openssl-1.1.1.m-9800-any.pkg.tar.xz
  - mingw-w64-i686-libssh2-1.10.0-9800-any.pkg.tar.xz
  - mingw-w64-i686-curl-7.64.1-9202-any.pkg.tar.xz
  - mingw-w64-i686-hdf5-1.10.5-9002-any.pkg.tar.xz
- - mingw-w64-i686-netcdf-4.9.0-1-any.pkg.tar.xz
  - mingw-w64-i686-expat-2.2.9-9002-any.pkg.tar.xz
+ - mingw-w64-i686-gettext-0.19.8.1-9002-any.pkg.tar.xz
+ - mingw-w64-i686-libxml2-2.9.10-9800-any.pkg.tar.xz
+ - mingw-w64-i686-netcdf-4.9.0-2-any.pkg.tar.xz
  - mingw-w64-i686-udunits-2.2.28-1-any.pkg.tar.xz
  - mingw-w64-x86_64-zlib-1.2.11-9100-any.pkg.tar.xz
  - mingw-w64-x86_64-openssl-1.1.1.m-9800-any.pkg.tar.xz
  - mingw-w64-x86_64-libssh2-1.10.0-9800-any.pkg.tar.xz
  - mingw-w64-x86_64-curl-7.64.1-9202-any.pkg.tar.xz
  - mingw-w64-x86_64-hdf5-1.10.5-9002-any.pkg.tar.xz
- - mingw-w64-x86_64-netcdf-4.9.0-1-any.pkg.tar.xz
  - mingw-w64-x86_64-expat-2.2.9-9002-any.pkg.tar.xz
+ - mingw-w64-x86_64-gettext-0.19.8.1-9002-any.pkg.tar.xz
+ - mingw-w64-x86_64-libxml2-2.9.10-9800-any.pkg.tar.xz
+ - mingw-w64-x86_64-netcdf-4.9.0-2-any.pkg.tar.xz
  - mingw-w64-x86_64-udunits-2.2.28-1-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-zlib-1.2.11-9100-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-openssl-1.1.1.m-9800-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-libssh2-1.10.0-9800-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-curl-7.64.1-9202-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-hdf5-1.10.5-9002-any.pkg.tar.xz
- - mingw-w64-ucrt-x86_64-netcdf-4.9.0-1-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-expat-2.2.9-9002-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-gettext-0.19.8.1-9002-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-libxml2-2.9.10-9800-any.pkg.tar.xz
+ - mingw-w64-ucrt-x86_64-netcdf-4.9.0-2-any.pkg.tar.xz
  - mingw-w64-ucrt-x86_64-udunits-2.2.28-1-any.pkg.tar.xz
